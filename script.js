@@ -1,15 +1,13 @@
-// Instantiate the object
-const http = new coreHTTP;
+const http = new CoreHTTP();
 
 function ShowResponse(responseData) {
   let html = "<ul style='list-style:none'>";
-
   if (typeof responseData === "string") {
     html += `<li>${responseData}</li>`;
   } else if (Array.isArray(responseData)) {
     responseData.forEach(user => {
       html += `<li>User ${user.id} - ${user.name}</li>`;
-    })
+    });
   } else {
     html += `<li>User ${responseData.id} - ${responseData.name}</li>`;
   }
@@ -17,60 +15,30 @@ function ShowResponse(responseData) {
 }
 
 function ShowError(err) {
-  html = `<p>${err}</p>`;
+  const html = `<p>${err}</p>`;
   document.querySelector("#response").innerHTML = html;
 }
 
-function ProcessGet(err, respStr) {
-  if (err) {
-    ShowError(err);
-  } else {
-    const respObj = JSON.parse(respStr);
-    ShowResponse(respObj);
-  }
-}
-
-function ProcessPost(err, respStr) {
-  if (err) {
-    ShowError(err);
-  } else {
-    const respObj = JSON.parse(respStr);
-    ShowResponse(respObj);
-  }
-}
-
-function ProcessPut(err, respStr) {
-  if (err) {
-    ShowError(err);
-  } else {
-    const respObj = JSON.parse(respStr);
-    ShowResponse(respObj);
-  }
-}
-
-function ProcessDelete(err, respStr) {
-  if (err) {
-    ShowError(err);
-  } else {
-    ShowResponse(respStr);
-  }
-}
-
-function sendRequest(reqType, targetURL, data) {
-
-  switch (reqType) {
-    case "get": // Get users from the endpoint
-      http.get(targetURL, ProcessGet);
-      break;
-    case "post": // Post (add) user to the endpoint
-      http.post(targetURL, data, ProcessPost);
-      break;
-    case "put": // Put (update) user in the endpoint
-      http.put(targetURL, data, ProcessPut);
-      break;
-    case "delete": // Delete user in the placeholder website
-      http.delete(targetURL, ProcessDelete);
-      break;            
+async function sendRequest(reqType, targetURL, data) {
+  try {
+    let response;
+    switch (reqType) {
+      case "get":
+        response = await http.get(targetURL);
+        break;
+      case "post":
+        response = await http.post(targetURL, data);
+        break;
+      case "put":
+        response = await http.put(targetURL, data);
+        break;
+      case "delete":
+        response = await http.delete(targetURL);
+        break;
+    }
+    ShowResponse(response);
+  } catch (error) {
+    ShowError(error.message);
   }
 }
 
@@ -174,7 +142,7 @@ function SetupRequest() {
   }
 }
 
-// Listners for radio buttions
+// Listeners for radio buttons
 function SetupInput(reqType) {
   switch (reqType) {
     case "get":
@@ -212,9 +180,8 @@ function StartUp() {
     SetupRequest();
     e.preventDefault();
   });
-};
+}
 
 window.onload = function() {
   StartUp();
 }
-

@@ -32,6 +32,9 @@ async function sendRequest(reqType, targetURL, data) {
       case "put":
         response = await http.put(targetURL, data);
         break;
+      case "patch":
+        response = await http.patch(targetURL, data);
+        break;
       case "delete":
         response = await http.delete(targetURL);
         break;
@@ -109,7 +112,7 @@ function SetupRequest() {
     };
   }
 
-  if (reqType === "put") {
+  if (reqType === "put" || reqType === "patch") {
     okToSend = false;
     if (ValidId(document.querySelector("#uIdArea>input").value,true)) {
       let uFullName = document.querySelector("#uNameArea>input").value;
@@ -154,6 +157,7 @@ function SetupInput(reqType) {
       document.querySelector("#uNameArea").style.display = "flex";
       break;
     case "put":
+    case "patch":
       document.querySelector("#uIdArea").style.display = "flex";
       document.querySelector("#uNameArea").style.display = "flex";
       break;
@@ -173,6 +177,7 @@ function StartUp() {
   document.querySelector("#rbGet").addEventListener("change", () => SetupInput("get"));
   document.querySelector("#rbPost").addEventListener("change", () => SetupInput("post"));
   document.querySelector("#rbPut").addEventListener("change", () => SetupInput("put"));
+  document.querySelector("#rbPatch").addEventListener("change", () => SetupInput("patch"));
   document.querySelector("#rbDelete").addEventListener("change", () => SetupInput("delete"));
 
   // Add the listener to the SEND button
